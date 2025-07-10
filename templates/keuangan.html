@@ -1,0 +1,302 @@
+{{ define "keuangan.html" }}
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Manajemen Keuangan</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Darumadrop+One&family=Montserrat:wght@400&family=Poppins:wght@500&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: "Montserrat", sans-serif;
+      font-optical-sizing: auto;
+      font-weight: 400;
+      font-style: normal;
+      background: url('/assets/bgrn.jpg') no-repeat center center fixed; 
+      -webkit-background-size: cover; 
+      -moz-background-size: cover;    
+      -o-background-size: cover;      
+      background-size: cover;
+      background-color: var(--text-light); 
+      font-family: 'Segoe UI', sans-serif;
+    }
+    #container {
+      background-color: rgba(255, 255, 255, 0.8); 
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+      margin: 20px auto;
+      max-width: 90%; 
+      min-height: calc(100vh - 40px); 
+      display: flex; 
+      flex-direction: column; 
+      z-index: 1; 
+      position: relative; /
+    }
+    h2, #container-1{
+      font-family: "Poppins", sans-serif;
+      font-weight: 500;
+      font-style: normal;
+    }
+
+    th{
+      font-family: "Poppins", sans-serif;
+      font-style: normal;
+    }
+
+    td, .row{
+      font-family: "Montserrat", sans-serif;
+      font-optical-sizing: auto;
+      font-weight: 400;
+      font-style: normal;
+    }
+
+    .navbar-custom {
+      background-color: var(--navy-primary); 
+    }
+
+    .navbar-custom .navbar-brand,
+    .navbar-custom .nav-link {
+      color: white;
+    }
+
+    .navbar-custom .nav-link:hover {
+      color: black;
+    }
+
+    .navbar-custom .navbar-toggler-icon {
+      filter: invert(1) grayscale(100%) brightness(200%); 
+    }
+
+    .header-section {
+      padding: 60px 0;
+      background: linear-gradient(to right, var(--navy-primary), var(--orange-accent)); 
+      color: white;
+      text-align: center;
+      border-radius: 12px;
+      margin-top: 20px;
+    }
+
+    .header-section h2 {
+      font-weight: bold;
+    }
+
+    .navbar-custom .btn-link {
+      color: white;
+      padding: 0.5rem 1rem;
+      text-decoration: none;
+      transition: color 0.3s ease;
+    }
+
+    .navbar-custom .btn-link:hover {
+      color: var(--orange-accent);
+      text-decoration: none;
+    }
+
+    @media (max-width: 768px) {
+      .header-section {
+        padding: 40px 15px;
+      }
+      .content-box {
+        padding: 20px;
+      }
+    
+    }
+    h2 {
+      color: #2C3E50;
+      border-bottom: 2px solid #FF8C00;
+      padding-bottom: 10px;
+    }
+    .btn-primary {
+      background-color: #FF8C00;
+      border-color: #FF8C00;
+    }
+    .btn-primary:hover {
+      background-color: #e08a00;
+    }
+    .btn-danger {
+      background-color: #2C3E50;
+      border-color: #2C3E50;
+    }
+    .btn-danger:hover {
+      background-color: #1A2E40;
+    }
+    .btn-warning {
+      background-color: #ffc107;
+      color: #000;
+    }
+    .table thead {
+      background-color: #2C3E50;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-custom mb-4 shadow-sm">
+        <div class="container" id="container-1">
+            <a class="navbar-brand fw-bold" href="/">UKM Badminton</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="/">Beranda</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/kehadiran">Kehadiran</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/keuangan">Keuangan</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/laporan">Laporan</a></li>
+                    {{ if .IsLoggedIn }}
+                        <li class="nav-item">
+                            <form action="/logout" method="post" class="nav-link p-0">
+                                <button type="submit" class="btn btn-link text-white text-decoration-none">Logout</button>
+                            </form>
+                        </li>
+                    {{ else }}
+                        <li class="nav-item"><a class="nav-link" href="/login">Logout</a></li>
+                    {{ end }}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+<div class="container mt-4" id="container">
+  <h2>Data Keuangan</h2>
+
+  <form method="POST" class="row g-3 mb-4" action="/keuangan">
+    <div class="col-md-3">
+      <input type="date" name="tanggal" class="form-control" required />
+    </div>
+    <div class="col-md-4">
+      <input type="text" name="deskripsi" class="form-control" placeholder="Deskripsi" required />
+    </div>
+    <div class="col-md-2">
+      <select name="tipe" class="form-select" required>
+        <option value="Pemasukan">Pemasukan</option>
+        <option value="Pengeluaran">Pengeluaran</option>
+      </select>
+    </div>
+    <div class="col-md-2">
+      <input type="number" step="0.01" name="jumlah" class="form-control" placeholder="Jumlah (Rp)" required />
+    </div>
+    <div class="col-md-1">
+      <button type="submit" class="btn btn-primary">Tambah</button>
+    </div>
+  </form>
+
+  <table class="table table-bordered table-striped">
+    <thead>
+      <tr>
+        <th>Tanggal</th>
+        <th>Deskripsi</th>
+        <th>Tipe</th>
+        <th>Jumlah (Rp)</th>
+        <th>Aksi</th>
+      </tr>
+    </thead>
+    <tbody>
+      {{ range .data }}
+      <tr data-id="{{ .ID }}">
+        <td class="tanggal">{{ .Tanggal.Format "2006-01-02" }}</td>
+        <td class="deskripsi">{{ .Deskripsi }}</td>
+        <td class="tipe">{{ .Tipe }}</td>
+        <td class="jumlah">{{ printf "%.2f" .Jumlah }}</td>
+        <td>
+          <button type="button" class="btn btn-sm btn-warning edit-btn"
+            data-bs-toggle="modal"
+            data-bs-target="#editModal"
+            data-id="{{ .ID }}"
+            data-tanggal="{{ .Tanggal.Format "2006-01-02" }}"
+            data-deskripsi="{{ .Deskripsi }}"
+            data-tipe="{{ .Tipe }}"
+            data-jumlah="{{ printf "%.2f" .Jumlah }}">
+            Edit
+          </button>
+          <a href="/keuangan/delete/{{ .ID }}" class="btn btn-sm btn-danger">Hapus</a>
+        </td>
+      </tr>
+      {{ end }}
+    </tbody>
+  </table>
+</div>
+
+<div class="modal fade" id="editModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <form class="modal-content" id="editForm">
+      <div class="modal-header">
+        <h5 class="modal-title">Edit Data Keuangan</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="editId">
+        <div class="mb-3">
+          <label for="editTanggal" class="form-label">Tanggal</label>
+          <input type="date" id="editTanggal" name="tanggal" class="form-control" required>
+        </div>
+        <div class="mb-3">
+          <label for="editDeskripsi" class="form-label">Deskripsi</label>
+          <input type="text" id="editDeskripsi" name="deskripsi" class="form-control" required>
+        </div>
+        <div class="mb-3">
+          <label for="editTipe" class="form-label">Tipe</label>
+          <select id="editTipe" name="tipe" class="form-select" required>
+            <option value="Pemasukan">Pemasukan</option>
+            <option value="Pengeluaran">Pengeluaran</option>
+          </select>
+        </div>
+        <div class="mb-3">
+          <label for="editJumlah" class="form-label">Jumlah</label>
+          <input type="number" step="0.01" id="editJumlah" name="jumlah" class="form-control" required>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="submit" class="btn btn-primary">Simpan</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  let currentEditId = null;
+  const modal = new bootstrap.Modal(document.getElementById('editModal'));
+
+  document.querySelectorAll('.edit-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      currentEditId = btn.getAttribute('data-id');
+      document.getElementById('editId').value = currentEditId;
+      document.getElementById('editTanggal').value = btn.getAttribute('data-tanggal');
+      document.getElementById('editDeskripsi').value = btn.getAttribute('data-deskripsi');
+      document.getElementById('editTipe').value = btn.getAttribute('data-tipe');
+      document.getElementById('editJumlah').value = btn.getAttribute('data-jumlah');
+    });
+  });
+
+  document.getElementById('editForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const id = document.getElementById('editId').value;
+    const formData = new URLSearchParams(new FormData(this));
+
+    const response = await fetch(`/keuangan/edit/${id}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: formData
+    });
+
+    if (response.ok) {
+      const row = document.querySelector(`tr[data-id="${id}"]`);
+      row.querySelector('.tanggal').textContent = document.getElementById('editTanggal').value;
+      row.querySelector('.deskripsi').textContent = document.getElementById('editDeskripsi').value;
+      row.querySelector('.tipe').textContent = document.getElementById('editTipe').value;
+      row.querySelector('.jumlah').textContent = parseFloat(document.getElementById('editJumlah').value).toFixed(2);
+      modal.hide();
+      alert("Data berhasil diperbarui!");
+    } else {
+      const errorText = await response.text();
+      alert("Gagal update data: " + errorText);
+    }
+  });
+</script>
+</body>
+</html>
+{{ end }}
